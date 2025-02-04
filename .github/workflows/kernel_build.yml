@@ -32,4 +32,31 @@ jobs:
           # Move the perseus_config to the root .config file
           cp arch/arm64/configs/perseus_config .config
 
-      #
+      # Step 4: Apply the defconfig (perseus_defconfig)
+      - name: Apply defconfig (perseus_defconfig)
+        run: |
+          cd linux
+          make ARCH=arm64 -j$(nproc) perseus_defconfig  # Apply your default config
+
+      # Step 5: Build the kernel
+      - name: Build the kernel
+        run: |
+          cd linux
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
+
+      # Step 6: Check if the kernel image exists
+      - name: Check if kernel image exists
+        run: |
+          if [ -f linux/arch/arm64/boot/Image ]; then
+            echo "Kernel image exists."
+          else
+            echo "Kernel image does not exist."
+            exit 1  # Exit if the image doesn't exist
+          fi
+
+      # Step 7: Upload Kernel Artifact
+      - name: Upload Kernel Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kernel-image
+          path: linux/arch/arm64/boot/Image

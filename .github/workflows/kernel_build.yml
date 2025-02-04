@@ -26,30 +26,10 @@ jobs:
           gcc-aarch64-linux-gnu g++-aarch64-linux-gnu make bc bison flex \
           libssl-dev libelf-dev libncurses5-dev wget
 
-      # Step 3: Download or move the .config file (perseus_config)
-      - name: Move or Download .config file
+      # Step 3: Use the perseus_config from arch/arm64/configs
+      - name: Use perseus_config from arch/arm64/configs
         run: |
-          # If you have the perseus_config in the repository already:
-          mv path_to_your_config/perseus_config linux/.config
+          # Move the perseus_config to the root .config file
+          cp arch/arm64/configs/perseus_config .config
 
-          # OR if you need to download the perseus_config (e.g., hosted externally)
-          # curl -L -o linux/.config https://yourserver.com/path/to/perseus_config
-
-      # Step 4: Apply the defconfig (perseus_defconfig)
-      - name: Apply defconfig (perseus_defconfig)
-        run: |
-          cd linux
-          make ARCH=arm64 -j$(nproc) perseus_defconfig  # Apply your default config
-
-      # Step 5: Build the kernel
-      - name: Build the kernel
-        run: |
-          cd linux
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- -j$(nproc)
-
-      # Step 6: Upload the kernel image as an artifact
-      - name: Upload Kernel Artifact
-        uses: actions/upload-artifact@v4  # Updated to v4
-        with:
-          name: kernel-image
-          path: linux/arch/arm64/boot/Image  # Path to the built kernel image
+      #

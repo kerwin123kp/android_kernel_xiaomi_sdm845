@@ -37,10 +37,12 @@ jobs:
         run: |
           make ARCH=arm64 -j$(nproc) perseus_defconfig  # Apply your default config
 
-      # Step 5: Disable 32-bit compatibility if needed
+      # Step 5: Disable 32-bit ARM compatibility and ensure CROSS_COMPILE_ARM32 is not set
       - name: Disable 32-bit ARM compatibility
         run: |
-          sed -i 's/CONFIG_ARM64_32=y/CONFIG_ARM64_32=n/' .config  # Disable 32-bit compatibility
+          # Disable 32-bit ARM compatibility by modifying the config file
+          sed -i 's/CONFIG_ARM64_32=y/CONFIG_ARM64_32=n/' .config
+          sed -i '/CROSS_COMPILE_ARM32/d' .config  # Remove any CROSS_COMPILE_ARM32 entries
 
       # Step 6: Build the kernel
       - name: Build the kernel
